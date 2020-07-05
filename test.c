@@ -6,28 +6,45 @@
 
 typedef struct
 {
+    int a;
+    int b;
+}C;
+typedef struct
+{
     char c;
-    int  i;
+    int i;
     double d;
-    char str[100];
+    char *str[3];
 }A;
+
 typedef struct
 {
     unsigned char c[10];
     A a;
+    C cc[3];
+    C *ccc;
 }B;
 
-SERIAL_STRUCT(A, 
-        BASIC_TYPE(JSON_NUMBER,c) 
-        BASIC_TYPE(JSON_NUMBER,i) 
-        BASIC_TYPE(JSON_FLOAT,d) 
-        BASIC_TYPE(JSON_STRING,str) 
-        );
-SERIAL_STRUCT(B, 
-        ARRAY_TYPE(JSON_NUMBER,c) 
-        STRUCT_TYPE(A,a) 
+
+SERIAL_STRUCT(C, 
+        BASIC_TYPE(JTYPE_NUMBER,a) 
+        BASIC_TYPE(JTYPE_NUMBER,b) 
         );
 
+SERIAL_STRUCT(A, 
+        BASIC_TYPE(JTYPE_NUMBER,c) 
+        BASIC_TYPE(JTYPE_NUMBER,i) 
+        BASIC_TYPE(JTYPE_FLOAT,d) 
+        BASIC_ARRAY(JTYPE_STRING,str) 
+        );
+
+SERIAL_STRUCT(B,
+        BASIC_ARRAY(JTYPE_NUMBER, c)
+        STRUCT_TYPE(A,a)
+        STRUCT_ARRAY(C,cc)
+        );
+
+C c = {99,1111};
 B b;
 B bb = {
             .c = {1,-2,223,5},
@@ -35,8 +52,10 @@ B bb = {
                 .c = 'p',
                 .i = -999,
                 .d = 98.77,
-                .str = "hello world"
-            }
+                .str = {"123","hello world"}
+            },
+            .cc = {11,22,33,44,55},
+                .ccc = &c
 };
 
 
@@ -44,11 +63,11 @@ B bb = {
 int main()
 {
 #if 1
-    print_B(&bb);
-    char*str = B_to_str(&bb);
-    printf("%s",str);
-    str_to_B(str,&b);
-    print_B(&b);
+    printstruct(B,&bb);
+    char*str = struct2str(B,&bb);
+    printf("%s\n",str);
+    str2struct(B,str,&b);
+    printstruct(B,&b);
 #endif
    
 
