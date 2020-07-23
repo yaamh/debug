@@ -88,9 +88,12 @@
     }while(0)
 
 #define BASIC_SET_string_ELEMENT(to_json, from_struct, _element)\
-    do{\
-        cJSON_AddStringToObject(to_json, #_element, (from_struct)->_element);\
-    }while(0)
+  do{\
+    if((from_struct)->_element)\
+      cJSON_AddStringToObject(to_json, #_element, (from_struct)->_element);\
+    else\
+      cJSON_AddNullToObject(to_json,#_element);\
+  }while(0)
 
 #define ARRAY_SET_int_ELEMENT(to_json, from_struct, _element, index) \
         cJSON_AddItemToArray(to_json, cJSON_CreateNumber((from_struct)->_element[index]));\
@@ -98,8 +101,10 @@
 #define ARRAY_SET_double_ELEMENT ARRAY_SET_int_ELEMENT
 
 #define ARRAY_SET_string_ELEMENT(to_json, from_struct, _element, index) \
-    if(!(from_struct)->_element[index])break;\
-    cJSON_AddItemToArray(to_json, cJSON_CreateString((from_struct)->_element[index]));\
+    if((from_struct)->_element[index])\
+      cJSON_AddItemToArray(to_json, cJSON_CreateString((from_struct)->_element[index]));\
+    else\
+      cJSON_AddItemToArray(to_json, cJSON_CreateNull());\
 
 #define BASIC_SET_ARRAY(to_json, from_struct, type, _element)\
     do{\
