@@ -23,7 +23,7 @@ static inline void list_add(list_node *prev, list_node *next,list_node *new)
     prev->next = new;
     new->prev = prev;
     new->next = next;
-    next->prev = next;
+    next->prev = new;
 }
 
 static inline void list_add_prev(list_node *node, list_node *new)
